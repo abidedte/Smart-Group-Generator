@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Group Generator</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">Smart Group Generator</span>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- LANDING PAGE -->
+  <section id="landingPage" class="page active">
+    <div class="landing-container">
+      <div class="landing-hero">
+        <h1 class="landing-title">Group Students <span class="accent">Smarter</span></h1>
+        <p class="landing-sub">Create balanced, random student groups in seconds. Choose your mode below.</p>
+      </div>
+      <div class="mode-cards">
+        <div class="mode-card" id="goSmartGenerate">
+          <div class="mode-card-icon">⚡</div>
+          <h2>Smart Generate</h2>
+          <p>Instantly shuffle & distribute all students into balanced groups automatically.</p>
+          <button class="btn btn-primary">Start Smart Generate</button>
+        </div>
+        <div class="mode-card" id="goSpin">
+          <div class="mode-card-icon">🎡</div>
+          <h2>Spin Mode</h2>
+          <p>Use an exciting spin wheel to assign students one by one into groups.</p>
+          <button class="btn btn-secondary">Start Spin Mode</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SMART GENERATE PAGE -->
+  <section id="smartGeneratePage" class="page">
+    <div class="page-container">
+      <div class="page-header">
+        <button class="back-btn" id="backFromSmart">← Back</button>
+        <h2 class="page-title">⚡ Smart Generate</h2>
+      </div>
+
+      <!-- Student Input -->
+      <div class="input-card">
+        <label class="input-label">Paste Student List <span class="hint">(one per line: ID Name)</span></label>
+        <textarea id="smartStudentInput" class="student-textarea" placeholder="101 John Doe&#10;102 Jane Smith&#10;103 Alex Brown"></textarea>
+        <div class="input-meta">
+          <span id="smartStudentCount" class="count-badge">0 students</span>
+          <button class="btn btn-sm btn-outline" id="smartSortBtn">Sort by ID</button>
+        </div>
+        <div id="smartSortedList" class="sorted-list"></div>
+        <div id="smartInputError" class="error-msg"></div>
+      </div>
+
+      <!-- Group Count -->
+      <div class="input-card">
+        <label class="input-label">Number of Groups</label>
+        <div class="group-count-row">
+          <input type="number" id="smartGroupCount" class="number-input" min="1" placeholder="e.g. 6" />
+          <button class="btn btn-primary" id="smartGenerateBtn">Generate Groups ⚡</button>
+        </div>
+        <div id="smartGroupError" class="error-msg"></div>
+      </div>
+
+      <!-- Results -->
+      <div id="smartResults" class="results-section hidden">
+        <div class="results-toolbar">
+          <h3 class="results-title">Generated Groups</h3>
+          <div class="toolbar-btns">
+            <button class="btn btn-sm btn-outline" id="smartRegenerateBtn">🔄 Regenerate</button>
+            <button class="btn btn-sm btn-green" id="smartExportTxt">📄 Export TXT</button>
+            <button class="btn btn-sm btn-blue" id="smartExportPdf">📑 Export PDF</button>
+            <button class="btn btn-sm btn-danger" id="smartResetBtn">✕ Reset</button>
+          </div>
+        </div>
+        <div id="smartGroupsContainer" class="groups-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPIN MODE PAGE -->
+  <section id="spinPage" class="page">
+    <div class="page-container">
+      <div class="page-header">
+        <button class="back-btn" id="backFromSpin">← Back</button>
+        <h2 class="page-title">🎡 Spin Mode</h2>
+      </div>
+
+      <!-- Step 1: Input -->
+      <div id="spinStep1" class="spin-step">
+        <div class="input-card">
+          <label class="input-label">Paste Student List <span class="hint">(one per line: ID Name)</span></label>
+          <textarea id="spinStudentInput" class="student-textarea" placeholder="101 John Doe&#10;102 Jane Smith&#10;103 Alex Brown"></textarea>
+          <div class="input-meta">
+            <span id="spinStudentCount" class="count-badge">0 students</span>
+            <button class="btn btn-sm btn-outline" id="spinSortBtn">Sort by ID</button>
+          </div>
+          <div id="spinSortedList" class="sorted-list"></div>
+          <div id="spinInputError" class="error-msg"></div>
+        </div>
+        <div class="input-card">
+          <label class="input-label">Number of Groups</label>
+          <div class="group-count-row">
+            <input type="number" id="spinGroupCount" class="number-input" min="1" placeholder="e.g. 4" />
+            <button class="btn btn-secondary" id="spinProceedBtn">Proceed to Leaders →</button>
+          </div>
+          <div id="spinGroupError" class="error-msg"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Select Leaders -->
+      <div id="spinStep2" class="spin-step hidden">
+        <div class="step-header">
+          <h3>👑 Select Group Leaders</h3>
+          <p class="step-sub">Pick exactly one leader per group. They'll be the first member of each group.</p>
+        </div>
+        <div id="spinLeaderGroups" class="leader-groups"></div>
+        <div id="spinLeaderError" class="error-msg"></div>
+        <button class="btn btn-secondary" id="spinStartWheelBtn">Start Spin Wheel 🎡</button>
+      </div>
+
+      <!-- Step 3: Spin Wheel -->
+      <div id="spinStep3" class="spin-step hidden">
+        <div class="spin-layout">
+          <!-- Wheel Panel -->
+          <div class="wheel-panel">
+            <div class="wheel-wrapper">
+              <div class="wheel-pointer">▼</div>
+              <canvas id="spinWheel" width="360" height="360"></canvas>
+            </div>
+            <div id="spinResult" class="spin-result hidden">
+              <div class="spin-result-label">Selected:</div>
+              <div id="spinResultName" class="spin-result-name"></div>
+              <div id="spinResultGroup" class="spin-result-group"></div>
+            </div>
+
+            <!-- Spin Mode Toggle -->
+            <div class="spin-mode-toggle">
+              <span class="toggle-label">Auto Spin</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="manualModeToggle" />
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label">Manual Spin</span>
+            </div>
+
+            <button class="btn btn-spin" id="spinBtn">🎡 Spin!</button>
+            <div class="spin-status">
+              <span id="remainingCount" class="status-badge">Remaining: 0</span>
+              <span id="nextGroupBadge" class="status-badge group-badge">Next: Group 1</span>
+            </div>
+          </div>
+
+          <!-- Groups Panel -->
+          <div class="spin-groups-panel">
+            <h3 class="panel-title">Groups</h3>
+            <div id="spinGroupsLive" class="spin-groups-live"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Results -->
+      <div id="spinStep4" class="spin-step hidden">
+        <div class="results-toolbar">
+          <h3 class="results-title">🎉 All Students Assigned!</h3>
+          <div class="toolbar-btns">
+            <button class="btn btn-sm btn-green" id="spinExportTxt">📄 Export TXT</button>
+            <button class="btn btn-sm btn-blue" id="spinExportPdf">📑 Export PDF</button>
+            <button class="btn btn-sm btn-danger" id="spinResetBtn">✕ Reset</button>
+          </div>
+        </div>
+        <div id="spinFinalGroups" class="groups-grid"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <span>Developed by <strong>Abid &amp; Emam</strong> ❤️</span>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/smartGenerate.js"></script>
+  <script src="js/spinMode.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
